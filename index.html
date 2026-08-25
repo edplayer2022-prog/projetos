@@ -1,132 +1,16 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="FluencyAI — sua jornada personalizada para a fluência em inglês." />
-    <title>FluencyAI | Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
-        <a class="brand" href="#" aria-label="FluencyAI — início">
-          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span>Fluency<span>AI</span></span>
-        </a>
-
-        <nav class="main-nav">
-          <p class="nav-label">MENU</p>
-          <a class="nav-item active" href="#dashboard" aria-current="page"><span class="icon">⌂</span> Visão geral</a>
-          <a class="nav-item" href="#trilha"><span class="icon">◇</span> Minha trilha</a>
-          <a class="nav-item" href="#pratica"><span class="icon">◉</span> Praticar</a>
-          <a class="nav-item" href="#vocabulario"><span class="icon">▤</span> Vocabulário <span class="badge">12</span></a>
-          <a class="nav-item" href="#progresso"><span class="icon">↗</span> Meu progresso</a>
-          <p class="nav-label support-label">SUPORTE</p>
-          <a class="nav-item" href="#comunidade"><span class="icon">♧</span> Comunidade</a>
-          <a class="nav-item" href="#ajuda"><span class="icon">?</span> Central de ajuda</a>
-        </nav>
-
-        <div class="sidebar-upgrade">
-          <span class="spark">✦</span>
-          <strong>Desbloqueie seu potencial</strong>
-          <p>Pratique sem limites com o plano Pro.</p>
-          <button type="button">Conhecer o Pro <span>→</span></button>
-        </div>
-        <button class="collapse-button" type="button" id="collapseSidebar" aria-label="Recolher menu">‹</button>
-      </aside>
-
-      <main class="main-content" id="dashboard">
-        <header class="topbar">
-          <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menu" aria-expanded="false">☰</button>
-          <div class="topbar-spacer"></div>
-          <div class="streak-pill" title="Sequência de estudos"><span>🔥</span><strong>7</strong><small>dias</small></div>
-          <button class="notification" aria-label="Notificações"><span>♢</span><i></i></button>
-          <button class="profile-button" type="button" aria-label="Abrir perfil">
-            <span class="avatar">MC</span>
-            <span class="profile-text"><strong>Marina Costa</strong><small>Intermediário B1</small></span>
-            <span class="chevron">⌄</span>
-          </button>
-        </header>
-
-        <div class="content-wrap">
-          <section class="welcome-row">
-            <div>
-              <p class="eyebrow">TERÇA-FEIRA, 25 DE AGOSTO</p>
-              <h1>Good morning, Marina! <span>👋</span></h1>
-              <p>Pronta para dar mais um passo rumo à fluência?</p>
-            </div>
-            <div class="weekly-goal">
-              <div class="goal-copy"><span>Meta semanal</span><strong>3 de 5 dias</strong></div>
-              <div class="goal-dots" aria-label="Meta semanal: três de cinco dias concluídos">
-                <span class="done">S</span><span class="done">T</span><span class="done">Q</span><span>Q</span><span>S</span>
-              </div>
-            </div>
-          </section>
-
-          <section class="hero-card">
-            <div class="hero-pattern"></div>
-            <div class="hero-copy">
-              <span class="lesson-tag">SUA PRÓXIMA AULA</span>
-              <p class="lesson-path">TRILHA B1 &nbsp;•&nbsp; UNIDADE 4</p>
-              <h2>Talking about<br />past experiences</h2>
-              <p class="lesson-description">Aprenda a compartilhar experiências usando o <em>Present Perfect</em> de forma natural.</p>
-              <div class="lesson-meta"><span>◷ &nbsp;12 min</span><span>◈ &nbsp;+40 XP</span></div>
-              <button class="primary-button" id="continueLesson" type="button"><span>▶</span> Continuar aula</button>
-            </div>
-            <div class="hero-visual" aria-hidden="true">
-              <div class="glow"></div>
-              <div class="chat-card chat-one"><span class="mini-avatar purple">AI</span><div><i></i><i></i></div></div>
-              <div class="chat-card chat-two"><span class="mini-avatar coral">MC</span><div><i></i><i></i></div></div>
-              <div class="floating-word word-one">been</div>
-              <div class="floating-word word-two">ever</div>
-              <div class="sound-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            </div>
-            <div class="lesson-progress"><span style="width: 64%"></span></div>
-            <span class="progress-label">64% concluído</span>
-          </section>
-
-          <section class="dashboard-grid">
-            <div class="practice-section">
-              <div class="section-heading"><div><h2>Pratique agora</h2><p>Atividades rápidas, resultados reais.</p></div><a href="#pratica">Ver todas <span>→</span></a></div>
-              <div class="practice-grid">
-                <article class="practice-card purple-card">
-                  <div class="practice-icon">✺</div><span class="practice-time">5 min</span>
-                  <h3>Conversa com IA</h3><p>Pratique uma conversa real com seu tutor.</p>
-                  <button type="button" aria-label="Iniciar conversa com IA">→</button>
-                </article>
-                <article class="practice-card orange-card">
-                  <div class="practice-icon">♬</div><span class="practice-time">3 min</span>
-                  <h3>Pronúncia</h3><p>Aperfeiçoe seu sotaque com feedback ao vivo.</p>
-                  <button type="button" aria-label="Iniciar prática de pronúncia">→</button>
-                </article>
-                <article class="practice-card blue-card">
-                  <div class="practice-icon">✓</div><span class="practice-time">4 min</span>
-                  <h3>Revisão inteligente</h3><p>12 palavras prontas para você revisar.</p>
-                  <button type="button" aria-label="Iniciar revisão inteligente">→</button>
-                </article>
-              </div>
-            </div>
-
-            <aside class="progress-card" id="progresso">
-              <div class="progress-header"><div><h2>Seu progresso</h2><p>Continue nesse ritmo!</p></div><button aria-label="Mais opções">•••</button></div>
-              <div class="level-row">
-                <div class="level-ring"><svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-value" cx="50" cy="50" r="42"/></svg><span><strong>B1</strong><small>NÍVEL</small></span></div>
-                <div class="level-copy"><span>Intermediário</span><strong>2.480 <small>XP</small></strong><p>520 XP para o nível B2</p></div>
-              </div>
-              <div class="stats-row"><div><span class="stat-icon purple-stat">▣</span><p><strong>18h</strong><small>Estudadas</small></p></div><div><span class="stat-icon orange-stat">◇</span><p><strong>142</strong><small>Palavras</small></p></div><div><span class="stat-icon green-stat">◎</span><p><strong>87%</strong><small>Precisão</small></p></div></div>
-              <div class="week-chart"><div class="chart-label"><span>Atividade semanal</span><strong>+24% <small>↗</small></strong></div><div class="bars" aria-label="Atividade nos últimos sete dias"><span style="height:40%"><i>S</i></span><span style="height:68%"><i>T</i></span><span style="height:52%"><i>Q</i></span><span class="today" style="height:92%"><i>Q</i></span><span style="height:42%"><i>S</i></span><span style="height:28%"><i>S</i></span><span style="height:20%"><i>D</i></span></div></div>
-            </aside>
-          </section>
-
-          <footer><p>“A little progress each day adds up to big results.”</p><span>— Satya Nani</span></footer>
-        </div>
-      </main>
-    </div>
-    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><div><strong>Aula carregada!</strong><small>Preparando sua experiência personalizada…</small></div></div>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="FluencyAI — uma jornada personalizada e prática para aprender inglês.">
+  <title>FluencyAI | Aprenda inglês</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" aria-live="polite"></div>
+  <div class="toast" id="toast" role="status"><span>✓</span><div><strong></strong><small></small></div></div>
+  <script src="script.js"></script>
+</body>
 </html>
