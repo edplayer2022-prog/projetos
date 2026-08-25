@@ -1,9 +1,11 @@
 const { test, expect } = require('@playwright/test');
 
-const storageKey = 'fluencyai.student.v1';
+const storageKey = 'fluencyai.student.v1.user-test';
+const sessionKey = 'fluencyai.auth.session.v1';
 
 async function openExercise(page) {
-  await page.addInitScript(({ storageKey }) => {
+  await page.addInitScript(({ storageKey, sessionKey }) => {
+    localStorage.setItem(sessionKey, JSON.stringify({access_token:'token',refresh_token:'refresh',expires_at:9999999999,user:{id:'user-test',email:'aluno@teste.com',user_metadata:{name:'Aluno Teste'}}}));
     localStorage.setItem(storageKey, JSON.stringify({
       profile: { name: 'Aluno Teste', daily: '10 min', goal: 'Estudos', reason: 'Falar sem medo' },
       onboarding: true,
@@ -15,7 +17,17 @@ async function openExercise(page) {
       completed: [],
       words: {}
     }));
-  }, { storageKey });
+  }, { storageKey, sessionKey });
+  let record;
+  await page.route('https://bccymgcmmqcpaudjhknv.supabase.co/**', async route => {
+    const request=route.request();
+    if (request.url().includes('student_progress')) {
+      if(request.method()==='POST'){record=request.postDataJSON();return route.fulfill({status:201,json:{}})}
+      const initial=JSON.parse(await page.evaluate(key=>localStorage.getItem(key),storageKey));
+      return route.fulfill({json:[record||{profile:initial.profile,progress:initial}]});
+    }
+    return route.fulfill({json:{}});
+  });
   await page.goto('/#lesson');
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '3');
 }
@@ -58,6 +70,7 @@ test('resposta errada exibe feedback, registra erro sem XP e permite chegar às 
 test('atualizar após responder mantém a etapa, a seleção e o feedback', async ({ page }) => {
   await openExercise(page);
   await page.getByRole('button', { name: 'is', exact: true }).click();
+  await expect.poll(async()=> (await savedState(page)).pendingSync).toBe(false);
   await page.reload();
 
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '3');
