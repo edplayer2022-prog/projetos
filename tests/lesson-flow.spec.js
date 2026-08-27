@@ -11,6 +11,7 @@ async function openExercise(page) {
       onboarding: true,
       placement: { level: 'A1', scores: { Vocabulário: 100, Gramática: 100, Leitura: 100, Listening: 100 } },
       lessonStep: 3,
+      currentLesson: 'greetings',
       lessonAnswers: {},
       xp: 0,
       errors: {},
@@ -39,56 +40,42 @@ async function savedState(page) {
 test('resposta correta permite continuar', async ({ page }) => {
   await openExercise(page);
   await page.getByRole('button', { name: 'am', exact: true }).click();
-  await expect(page.locator('#feedback-exercise')).toContainText('Muito bem');
+  await expect(page.getByRole('status')).toContainText('Muito bem');
   await page.getByRole('button', { name: 'Continuar →' }).click();
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '4');
 });
 
-test('resposta errada exibe feedback, registra erro sem XP e permite chegar às etapas 5 e 6', async ({ page }) => {
+test('resposta errada registra erro, não dá XP e oferece repetição e explicação', async ({ page }) => {
   await openExercise(page);
   await page.getByRole('button', { name: 'is', exact: true }).click();
-  await expect(page.locator('#feedback-exercise')).toContainText('resposta correta');
-  await expect(page.getByRole('button', { name: 'is', exact: true })).toHaveClass(/wrong/);
-  await expect(page.getByRole('button', { name: 'am', exact: true })).toHaveClass(/correct/);
-
-  let state = await savedState(page);
-  expect(state.lessonAnswers.exercise).toEqual({ selected: 0, correct: false });
-  expect(state.errors.exercise).toBe(1);
-  expect(state.xp).toBe(0);
-
-  await page.getByRole('button', { name: 'Continuar →' }).click();
-  await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '4');
-  for (const word of ['My', 'name', 'is', 'Leo']) {
-    await page.getByRole('button', { name: word, exact: true }).click();
-  }
-  await page.getByRole('button', { name: 'Verificar frase' }).click();
-  await page.getByRole('button', { name: 'Continuar →' }).click();
-  await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '5');
-  await expect(page.getByPlaceholder('Ex.: Hello! My name is Julia.')).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('salvo para revisão');
+  await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ver explicação' })).toBeVisible();
+  let saved=await savedState(page);
+  expect(saved.lessonAnswers['greetings:3'].firstCorrect).toBe(false);
+  expect(saved.errors['greetings:3']).toBe(1);
+  expect(saved.xp).toBe(0);
+  await page.getByRole('button', { name: 'Tentar novamente' }).click();
+  await page.getByRole('button', { name: 'am', exact: true }).click();
+  saved=await savedState(page);
+  expect(saved.lessonAnswers['greetings:3'].correct).toBe(true);
+  expect(saved.lessonAnswers['greetings:3'].firstCorrect).toBe(false);
 });
 
-test('atualizar após responder mantém a etapa, a seleção e o feedback', async ({ page }) => {
+test('retoma exatamente etapa, seleção e feedback após recarregar e sincronizar', async ({ page }) => {
   await openExercise(page);
-  await page.getByRole('button', { name: 'is', exact: true }).click();
+  await page.getByRole('button', { name: 'are', exact: true }).click();
   await expect.poll(async()=> (await savedState(page)).pendingSync).toBe(false);
   await page.reload();
-
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '3');
-  await expect(page.getByRole('button', { name: 'is', exact: true })).toHaveClass(/wrong/);
-  await expect(page.getByRole('button', { name: 'am', exact: true })).toHaveClass(/correct/);
-  await expect(page.locator('#feedback-exercise')).toContainText('resposta correta');
-  await page.getByRole('button', { name: 'Continuar →' }).click();
-  await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '4');
+  await expect(page.getByRole('button', { name: 'are', exact: true })).toHaveClass(/wrong/);
+  await expect(page.getByRole('status')).toContainText('salvo para revisão');
 });
 
-test('impede avanço somente quando nenhuma alternativa foi escolhida', async ({ page }) => {
+test('não revela resposta e impede avanço antes da tentativa', async ({ page }) => {
   await openExercise(page);
+  await expect(page.getByText('Usamos “am”')).toBeHidden();
   await page.getByRole('button', { name: 'Continuar →' }).click();
-
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '3');
-  await expect(page.locator('#toast')).toContainText('Escolha uma alternativa antes de continuar');
-
-  await page.getByRole('button', { name: 'are', exact: true }).click();
-  await page.getByRole('button', { name: 'Continuar →' }).click();
-  await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '4');
+  await expect(page.locator('#toast')).toContainText('Faça uma tentativa');
 });
