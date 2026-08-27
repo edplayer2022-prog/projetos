@@ -22,6 +22,16 @@ Aplicação estática, responsiva e acessível para aprendizagem de inglês A1. 
 
 Cada aula tem objetivo, oito palavras com tradução/pronúncia/exemplo, frases reais e 14 etapas: vocabulário, áudio via `SpeechSynthesis`, compreensão de listening, Vocabulary Match, lacunas, Sentence Builder, múltipla escolha, tradução contextual, construção guiada, escrita livre, Real Life Dialogue, revisão e resultado. Alternativas são embaralhadas uma vez e persistidas para que a retomada seja exata.
 
+## Pratique agora
+
+Os três cards do painel são atividades completas, acessíveis por clique, `Enter` ou barra de espaço:
+
+* **Vocabulary Match:** reúne dez pares da aula atual, embaralha as colunas independentemente, oferece áudio e feedback e registra tempo, precisão, erros, revisão e XP.
+* **Listening Challenge:** traz cinco questões entre múltipla escolha e lacunas, áudio com repetição e velocidades 0.75x/1x/1.25x; transcrição, tradução e explicação só aparecem após responder.
+* **Desafio diário:** usa data e conteúdo A1 como semente para alternar vocabulário, listening, Sentence Builder e diálogo. A conclusão, streak e a chave de XP único são sincronizadas pelo Supabase.
+
+Seleções, questão atual, tentativas e rascunho diário ficam no progresso local e remoto, permitindo retomar uma atividade interrompida. O mapa `xpAwards` impede que repetir ou reabrir uma conclusão conceda XP novamente.
+
 A primeira tentativa define a pontuação. Um erro é salvo para revisão e não bloqueia a sequência; **Tentar novamente** e **Ver explicação** aparecem somente depois da tentativa. A conclusão exige 70%. Abaixo disso, as respostas permanecem salvas e a revisão é recomendada. As aulas são desbloqueadas progressivamente.
 
 ## Executar localmente
