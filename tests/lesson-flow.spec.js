@@ -40,7 +40,7 @@ async function savedState(page) {
 test('resposta correta permite continuar', async ({ page }) => {
   await openExercise(page);
   await page.getByRole('button', { name: 'am', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('Muito bem');
+  await expect(page.locator('#feedback-greetings-3')).toContainText('Muito bem');
   await page.getByRole('button', { name: 'Continuar →' }).click();
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '4');
 });
@@ -48,7 +48,7 @@ test('resposta correta permite continuar', async ({ page }) => {
 test('resposta errada registra erro, não dá XP e oferece repetição e explicação', async ({ page }) => {
   await openExercise(page);
   await page.getByRole('button', { name: 'is', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('salvo para revisão');
+  await expect(page.locator('#feedback-greetings-3')).toContainText('salvo para revisão');
   await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Ver explicação' })).toBeVisible();
   let saved=await savedState(page);
@@ -69,7 +69,7 @@ test('retoma exatamente etapa, seleção e feedback após recarregar e sincroniz
   await page.reload();
   await expect(page.locator('.lesson-page')).toHaveAttribute('data-step', '3');
   await expect(page.getByRole('button', { name: 'are', exact: true })).toHaveClass(/wrong/);
-  await expect(page.getByRole('status')).toContainText('salvo para revisão');
+  await expect(page.locator('#feedback-greetings-3')).toContainText('salvo para revisão');
 });
 
 test('não revela resposta e impede avanço antes da tentativa', async ({ page }) => {
