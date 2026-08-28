@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {normalize,score,canComplete,isUnlocked,freshest,seededShuffle,dailyDefinition,awardOnce}=require('../learning-core');
+const {normalize,score,canComplete,isUnlocked,freshest,seededShuffle,dailyDefinition,awardOnce,migrateProgress,lessonStatus,checkpointResult,nextRecommendedActivity,SKILLS}=require('../learning-core');
 
 test('aceita diferenças de maiúsculas, espaços, acentos e pontuação',()=>{
   assert.equal(normalize('  Olá,   MUNDO! '),normalize('ola mundo'));
@@ -45,4 +45,34 @@ test('XP é concedido uma única vez por chave sincronizável',()=>{
   assert.equal(awardOnce(state,'daily:2026-08-27',10),true);
   assert.equal(awardOnce(state,'daily:2026-08-27',10),false);
   assert.equal(state.xp,15);
+});
+
+test('migra defensivamente o progresso legado sem perder respostas ou conclusões',()=>{
+  const migrated=migrateProgress({completed:['greetings'],lessonAnswers:{'greetings:3':{value:'am'}},xp:80});
+  assert.equal(migrated.schemaVersion,2);
+  assert.deepEqual(migrated.completed,['greetings']);
+  assert.equal(migrated.lessonAnswers['greetings:3'].value,'am');
+  assert.deepEqual(Object.keys(migrated.skillProgress),SKILLS);
+});
+
+test('calcula os cinco estados curriculares e desbloqueio progressivo',()=>{
+  const lessons=[{id:'one'},{id:'two'},{id:'three'}];
+  assert.equal(lessonStatus('one',0,migrateProgress({currentLesson:'one',lessonStep:2}),lessons),'in_progress');
+  assert.equal(lessonStatus('two',1,migrateProgress({}),lessons),'locked');
+  assert.equal(lessonStatus('two',1,migrateProgress({completed:['one']}),lessons),'available');
+  assert.equal(lessonStatus('one',0,migrateProgress({completed:['one']}),lessons),'completed');
+  assert.equal(lessonStatus('one',0,migrateProgress({completed:['one'],reviewRequired:['one']}),lessons),'review_required');
+});
+
+test('recomenda erro, aula incompleta, checkpoint e meta diária na ordem pedagógica',()=>{
+  const lessons=[{id:'one'},{id:'check',test:true}];
+  assert.equal(nextRecommendedActivity({errors:{'one:3':1}},lessons).reason,'errors');
+  assert.equal(nextRecommendedActivity({currentLesson:'one',lessonStep:4},lessons).reason,'incomplete');
+  assert.equal(nextRecommendedActivity({completed:['one']},lessons).reason,'checkpoint');
+  assert.equal(nextRecommendedActivity({completed:['one','check'],dailyChallenges:{}},lessons,new Date('2026-08-27T10:00:00Z')).reason,'daily_goal');
+});
+
+test('checkpoint respeita nota mínima configurável e sempre permite nova tentativa',()=>{
+  assert.deepEqual(checkpointResult([true,true,true,false],80),{percent:75,minimum:80,passed:false,canRetry:true});
+  assert.equal(checkpointResult([true,true,true,false],70).passed,true);
 });

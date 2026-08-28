@@ -1,6 +1,18 @@
 # FluencyAI
 
-Aplicação estática, responsiva e acessível para aprendizagem de inglês A1. Funciona em GitHub Pages sem etapa de build e mantém autenticação e sincronização de progresso no Supabase.
+Aplicação estática, responsiva e acessível para aprendizagem de inglês. Funciona em GitHub Pages sem etapa de build e mantém autenticação e sincronização de progresso no Supabase.
+
+## Arquitetura curricular (fase 1 do Plano Mestre A1–C2)
+
+`curriculum.js` é o catálogo independente da UI: **CEFR Level → Module → Unit → Lesson**. `lessons.js` contém as aulas publicadas e seus blocos reutilizáveis; os ids A1 antigos continuam canônicos. A UI apenas percorre o catálogo. A1 está disponível, organizado em Getting Started, Everyday Life, Around Town e Review and Exam; A2–C2 aparecem somente como roadmap bloqueado, sem ações decorativas.
+
+Os blocos aceitos incluem objetivo, explicação, vocabulário, exemplos, pronúncia, áudio/listening, diálogo, leitura, múltipla escolha, lacunas, matching, ordering/sentence builder, tradução, writing, speaking, conversation, review, quiz e summary. A unidade A1 / Getting Started / Greetings cobre saudações por período, despedida, apresentação, nome, origem, alfabeto, números e revisão/checkpoint reaproveitando `greetings`.
+
+### Estado, recomendação e migração
+
+As aulas usam `locked`, `available`, `in_progress`, `completed` e `review_required`. `nextRecommendedActivity(progress)` prioriza erros/revisão, retomada incompleta, checkpoint, próxima aula, meta diária e prática. Checkpoints têm mínimo configurável (70% por padrão), guardam tentativas e nunca apagam respostas na revisão.
+
+Ao carregar cache legado ou resposta do Supabase, `migrateProgress` preserva ids, respostas, XP, palavras e conclusões e acrescenta defensivamente `schemaVersion: 2`, checkpoints, revisões e sete habilidades: speaking, listening, vocabulary, grammar, reading, writing e pronunciation. O namespace por `user_id`, a escolha da versão mais recente e o reenvio offline continuam inalterados.
 
 ## Trilha A1
 
@@ -71,7 +83,7 @@ Os testes unitários cobrem normalização das respostas, primeira tentativa/rep
 ## Roteiro de teste manual
 
 1. Crie uma conta, confirme o e-mail, entre e conclua preferências e nivelamento.
-2. Abra a trilha e confirme 15 aulas, com apenas a primeira desbloqueada.
+2. Abra Meu Caminho; confirme A1 com 15 aulas mapeadas e apenas a primeira desbloqueada, além de A2–C2 identificados como roadmap bloqueado e sem botões.
 3. Em uma atividade, tente avançar sem responder; confirme que a resposta não é revelada.
 4. Responda errado; confira erro salvo, zero crédito, **Tentar novamente**, **Ver explicação** e possibilidade de continuar.
 5. Use novamente com variações de caixa, espaços e pontuação; confirme a aceitação, sem alterar o crédito da primeira tentativa.
@@ -82,3 +94,7 @@ Os testes unitários cobrem normalização das respostas, primeira tentativa/rep
 10. Conclua aulas 5, 10 e 15; confira checkpoints e resultado final por Vocabulário, Listening, Gramática, Escrita e Conversação.
 11. Conclua o desafio diário uma vez e verifique que XP não pode ser recebido duas vezes no mesmo dia.
 12. Teste em 375 px, tablet e desktop e publique a raiz no GitHub Pages para validar os assets relativos.
+
+## Próximas fases
+
+Ficam explicitamente fora desta entrega: expansão de Vocabulary/Flashcards/Review; Labs; AI Conversation/Real Life; Admin/CMS; e publicação do conteúdo completo A2–C2.
