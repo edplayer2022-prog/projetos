@@ -2,10 +2,14 @@
   "name": "fluencyai",
   "private": true,
   "scripts": {
-    "test": "npm run test:unit && playwright test",
-    "test:unit": "node --test tests/learning-core.test.js"
+    "test": "npm run test:unit && npm run test:ui",
+    "test:unit": "node --test tests/learning-core.test.js",
+    "test:ui": "node scripts/run-ui-tests.js",
+    "test:integration": "node --test tests/continuation.integration.test.js",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1"
+    "@playwright/test": "^1.62.1",
+    "jsdom": "^30.0.1"
   }
 }

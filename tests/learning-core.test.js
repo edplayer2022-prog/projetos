@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {normalize,score,canComplete,isUnlocked,freshest,seededShuffle,dailyDefinition,awardOnce,migrateProgress,lessonStatus,checkpointResult,nextRecommendedActivity,SKILLS}=require('../learning-core');
+const {normalize,score,canComplete,isUnlocked,freshest,seededShuffle,dailyDefinition,awardOnce,migrateProgress,lessonStatus,checkpointResult,dueReviewKeys,nextRecommendedActivity,SKILLS}=require('../learning-core');
 
 test('aceita diferenças de maiúsculas, espaços, acentos e pontuação',()=>{
   assert.equal(normalize('  Olá,   MUNDO! '),normalize('ola mundo'));
@@ -64,12 +64,35 @@ test('calcula os cinco estados curriculares e desbloqueio progressivo',()=>{
   assert.equal(lessonStatus('one',0,migrateProgress({completed:['one'],reviewRequired:['one']}),lessons),'review_required');
 });
 
-test('recomenda erro, aula incompleta, checkpoint e meta diária na ordem pedagógica',()=>{
-  const lessons=[{id:'one'},{id:'check',test:true}];
-  assert.equal(nextRecommendedActivity({errors:{'one:3':1}},lessons).reason,'errors');
-  assert.equal(nextRecommendedActivity({currentLesson:'one',lessonStep:4},lessons).reason,'incomplete');
-  assert.equal(nextRecommendedActivity({completed:['one']},lessons).reason,'checkpoint');
-  assert.equal(nextRecommendedActivity({completed:['one','check'],dailyChallenges:{}},lessons,new Date('2026-08-27T10:00:00Z')).reason,'daily_goal');
+test('erros históricos sem revisão vencida não bloqueiam a próxima aula',()=>{
+  const lessons=[{id:'one'},{id:'two'}],now=new Date('2026-08-27T10:00:00Z');
+  const result=nextRecommendedActivity({completed:['one'],errors:{'one:3':2},words:{hello:{next:now.getTime()+86400000}}},lessons,now);
+  assert.equal(result.reason,'next_lesson');
+  assert.equal(result.lessonId,'two');
+});
+
+test('revisão realmente vencida recomenda a rota review',()=>{
+  const lessons=[{id:'one'},{id:'two'}],now=new Date('2026-08-27T10:00:00Z');
+  const result=nextRecommendedActivity({completed:['one'],words:{hello:{next:now.getTime()-1}}},lessons,now);
+  assert.equal(result.route,'review');
+  assert.equal(result.reason,'review_due');
+  assert.deepEqual(dueReviewKeys({hello:{next:now.getTime()-1},future:{next:now.getTime()+1}},now),['hello']);
+});
+
+test('prioriza aula incompleta, checkpoint, revisão, próxima aula, diário e prática',()=>{
+  const lessons=[{id:'one'},{id:'check',test:true},{id:'two'}],now=new Date('2026-08-27T10:00:00Z');
+  assert.equal(nextRecommendedActivity({currentLesson:'one',lessonStep:4,words:{x:{next:0}}},lessons,now).reason,'incomplete');
+  assert.equal(nextRecommendedActivity({completed:['one'],words:{x:{next:0}}},lessons,now).reason,'checkpoint');
+  assert.equal(nextRecommendedActivity({completed:['one','check'],words:{x:{next:0}}},lessons,now).reason,'review_due');
+  assert.equal(nextRecommendedActivity({completed:['one','check']},lessons,now).reason,'next_lesson');
+  assert.equal(nextRecommendedActivity({completed:['one','check','two']},lessons,now).reason,'daily_goal');
+  assert.equal(nextRecommendedActivity({completed:['one','check','two'],dailyChallenges:{'2026-08-27':{completed:true}}},lessons,now).reason,'practice');
+});
+
+test('todas as recomendações usam rotas válidas',()=>{
+  const lessons=[{id:'one'},{id:'check',test:true}],states=[{currentLesson:'one',lessonStep:2},{completed:['one']},{completed:['one','check'],words:{x:{next:0}}},{completed:['one','check']},{completed:['one','check'],dailyChallenges:{'2026-08-27':{completed:true}}}];
+  const valid=new Set(['lesson','review','daily','vocabulary']);
+  states.forEach(state=>assert.ok(valid.has(nextRecommendedActivity(state,lessons,new Date('2026-08-27')).route)));
 });
 
 test('checkpoint respeita nota mínima configurável e sempre permite nova tentativa',()=>{
