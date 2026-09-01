@@ -98,3 +98,9 @@ Os testes unitários cobrem normalização das respostas, primeira tentativa/rep
 ## Próximas fases
 
 Ficam explicitamente fora desta entrega: expansão de Vocabulary/Flashcards/Review; Labs; AI Conversation/Real Life; Admin/CMS; e publicação do conteúdo completo A2–C2.
+
+## Testes de continuidade sem navegador
+
+`npm test` procura Chrome/Chromium em `PLAYWRIGHT_CHROME` e nos caminhos comuns do sistema. Quando encontra um executável, roda a suíte Playwright completa. Quando o navegador não está disponível (por exemplo, quando o proxy bloqueia o download do Playwright), roda explicitamente `tests/continuation.integration.test.js` com jsdom — a substituição é informada no terminal e nunca é marcada silenciosamente como *skipped*.
+
+A suíte alternativa monta o aplicativo com um estado migrado de 6/15 aulas, erros históricos e revisão futura e valida o dashboard, as três saídas da revisão em dia, a continuidade após o desafio diário, rotas válidas e preservação do progresso após refresh. Para forçar a suíte de integração, use `npm run test:integration`; para executar Playwright em um ambiente com navegador instalado, use `PLAYWRIGHT_CHROME=/caminho/do/chrome npm run test:e2e`.
